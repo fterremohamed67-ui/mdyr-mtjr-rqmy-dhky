@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "مدير المتجر الذكي"
+description = "لوحة عربية لإدارة متجر منتجات رقمية، ومحادثة مساعد تاجر، وتتبع المبيعات والتنبيهات وسجل التحويلات المالية مع ضوابط تأكيد واضحة."
+version = "1.0.0"
+id = "artifacts/digital-store-agent"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25929
+
+[services.development]
+run = "pnpm --filter @workspace/digital-store-agent run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/digital-store-agent", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/digital-store-agent/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25929"
+BASE_PATH = "/"
