@@ -10,6 +10,12 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: store
+    description: Whop store, products, checkouts, and sales
+  - name: agent
+    description: Arabic store assistant
+  - name: settings
+    description: Integration and account status
 paths:
   /healthz:
     get:
@@ -24,6 +30,189 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /whop/status:
+    get:
+      operationId: getWhopStatus
+      tags: [settings]
+      summary: Check Whop integration readiness
+      responses:
+        "200":
+          description: Current integration state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntegrationStatus"
+  /whop/overview:
+    get:
+      operationId: getStoreOverview
+      tags: [store]
+      summary: Get store totals and recent sales
+      responses:
+        "200":
+          description: Store overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreOverview"
+        "401":
+          description: Sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /whop/plans:
+    get:
+      operationId: listStorePlans
+      tags: [store]
+      summary: List digital products and prices from Whop
+      responses:
+        "200":
+          description: Whop plans normalized for the store
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StorePlan"
+        "401":
+          description: Sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "503":
+          description: Whop permissions or company configuration are incomplete
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    post:
+      operationId: createStoreProduct
+      tags: [store]
+      summary: Create a Whop product and its one-time payment plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Product and plan created in Whop
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StorePlan"
+        "400":
+          description: Invalid product information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "503":
+          description: Whop permissions or company configuration are incomplete
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /whop/checkout:
+    post:
+      operationId: createStoreCheckout
+      tags: [store]
+      summary: Create a hosted Whop checkout link for a plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckoutInput"
+      responses:
+        "200":
+          description: Hosted checkout link
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutLink"
+        "400":
+          description: Invalid plan ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "401":
+          description: Sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "503":
+          description: Whop permissions or company configuration are incomplete
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /whop/payments:
+    get:
+      operationId: listStorePayments
+      tags: [store]
+      summary: List recent Whop payments
+      responses:
+        "200":
+          description: Recent payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StorePayment"
+        "401":
+          description: Sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "503":
+          description: Whop permissions or company configuration are incomplete
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /agent/chat:
+    post:
+      operationId: sendAgentMessage
+      tags: [agent]
+      summary: Send a text message to the Arabic store assistant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentMessageInput"
+      responses:
+        "200":
+          description: Assistant reply
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentMessageResponse"
+        "401":
+          description: Sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "503":
+          description: AI service is not enabled for this project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +222,142 @@ components:
           type: string
       required:
         - status
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    IntegrationStatus:
+      type: object
+      required: [whop, whatsapp, binance, ai, message]
+      properties:
+        whop:
+          type: string
+          enum: [ready, permissions_required, not_connected, configuration_required]
+        whatsapp:
+          type: string
+          enum: [ready, not_connected]
+        binance:
+          type: string
+          enum: [ready, unavailable]
+        ai:
+          type: string
+          enum: [ready, upgrade_required]
+        message:
+          type: string
+    StoreOverview:
+      type: object
+      required: [currency, revenue, paymentCount, customerCount, productCount, recentPayments, integrationState]
+      properties:
+        currency:
+          type: string
+        revenue:
+          type: ["number", "null"]
+        paymentCount:
+          type: integer
+        customerCount:
+          type: integer
+        productCount:
+          type: integer
+        recentPayments:
+          type: array
+          items:
+            $ref: "#/components/schemas/StorePayment"
+        integrationState:
+          type: string
+          enum: [ready, permissions_required, not_connected, configuration_required]
+    StorePlan:
+      type: object
+      required: [id, productId, title, description, price, currency, language, createdAt]
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        price:
+          type: number
+        currency:
+          type: string
+        language:
+          type: string
+          enum: [ar, en]
+        createdAt:
+          type: ["string", "null"]
+          format: date-time
+    StorePayment:
+      type: object
+      required: [id, amount, currency, status, buyerName, productTitle, createdAt]
+      properties:
+        id:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+        buyerName:
+          type: ["string", "null"]
+        productTitle:
+          type: ["string", "null"]
+        createdAt:
+          type: ["string", "null"]
+          format: date-time
+    ProductInput:
+      type: object
+      required: [title, description, price, currency, language]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        price:
+          type: number
+          exclusiveMinimum: 0
+        currency:
+          type: string
+          enum: [usd]
+        language:
+          type: string
+          enum: [ar, en]
+    CheckoutInput:
+      type: object
+      required: [planId]
+      properties:
+        planId:
+          type: string
+          minLength: 1
+    CheckoutLink:
+      type: object
+      required: [purchaseUrl]
+      properties:
+        purchaseUrl:
+          type: string
+          format: uri
+    AgentMessageInput:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 4000
+    AgentMessageResponse:
+      type: object
+      required: [reply, language]
+      properties:
+        reply:
+          type: string
+        language:
+          type: string
+          enum: [ar, en]
 
