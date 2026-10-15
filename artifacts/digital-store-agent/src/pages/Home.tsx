@@ -1,6 +1,7 @@
 import { useAuth } from '@clerk/react';
-import { ArrowLeft, Bot, ChartNoAxesCombined, CircleDollarSign, PackageCheck, ShieldCheck, Store } from 'lucide-react';
+import { ArrowLeft, ChartNoAxesCombined, CircleDollarSign, PackageCheck, ShieldCheck, Store } from 'lucide-react';
 import { Link, Redirect } from 'wouter';
+import { FeminineRobotAvatar } from '../components/FeminineRobotAvatar';
 
 export function HomePage() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -10,7 +11,7 @@ export function HomePage() {
     <div className="landing" dir="rtl">
       <nav className="landing-nav">
         <div className="landing-logo">
-          <div className="brand-mark"><Bot size={23} /></div>
+            <div className="brand-mark"><FeminineRobotAvatar size={34} decorative /></div>
           <span>تاجر ذكي</span>
         </div>
         <div className="landing-links">
@@ -33,16 +34,8 @@ export function HomePage() {
           <div className="orbit" />
           <div className="orbit-tag first"><Store size={14} style={{ verticalAlign: 'middle', marginLeft: 7 }} /> متجرك في مكان واحد</div>
           <div className="orbit-tag second"><ShieldCheck size={14} style={{ verticalAlign: 'middle', marginLeft: 7 }} /> أرقام من مصدرها</div>
-          <div className="robot-illustration">
-            <div className="robot-antenna" />
-            <div className="robot-arm left" />
-            <div className="robot-arm right" />
-            <div className="robot-screen">
-              <div>
-                <div className="robot-eyes"><i /><i /></div>
-                <div className="robot-mouth" />
-              </div>
-            </div>
+          <div className="assistant-hero-orb">
+            <FeminineRobotAvatar size={245} decorative />
           </div>
         </div>
       </section>
@@ -59,17 +52,17 @@ export function HomePage() {
         <h2>كل ما تحتاجه واضح أمامك.</h2>
         <div className="feature-grid">
           <article className="panel feature-card">
-            <ChartNoAxesCombined size={20} color="#a85837" />
+            <ChartNoAxesCombined size={20} color="#397db7" />
             <h3>صورة تشغيلية مباشرة</h3>
             <p>شاهد ملخص المنتجات والمبيعات والعملاء من البيانات المتاحة، مع تنبيه واضح حين تحتاج الخدمة إلى صلاحية إضافية.</p>
           </article>
           <article className="panel feature-card">
-            <PackageCheck size={20} color="#a85837" />
+            <PackageCheck size={20} color="#397db7" />
             <h3>كتالوج المنتجات</h3>
             <p>أنشئ خطط منتجاتك وأدر روابط الدفع المستضافة في مكان واحد.</p>
           </article>
           <article className="panel feature-card">
-            <Bot size={20} color="#a85837" />
+            <FeminineRobotAvatar size={27} decorative />
             <h3>مساعد عربي صريح</h3>
             <p>واجهة المساعد جاهزة، وسيظل إنشاء المحتوى والصوت متوقفاً حتى يكتمل إعداد الذكاء الاصطناعي.</p>
           </article>

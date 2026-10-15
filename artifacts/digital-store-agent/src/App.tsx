@@ -52,43 +52,43 @@ const clerkAppearance = {
     logoImageUrl: `${window.location.origin}${basePath}/logo.svg`,
   },
   variables: {
-    colorPrimary: '#a85837',
-    colorForeground: '#293645',
-    colorMutedForeground: '#777e7b',
+    colorPrimary: '#347bb8',
+    colorForeground: '#203b58',
+    colorMutedForeground: '#6b8093',
     colorDanger: '#a84f3e',
-    colorBackground: '#fbfaf6',
-    colorInput: '#fffdf9',
-    colorInputForeground: '#293645',
-    colorNeutral: '#ded9cf',
+    colorBackground: 'rgba(247,251,255,.92)',
+    colorInput: 'rgba(250,253,255,.88)',
+    colorInputForeground: '#294865',
+    colorNeutral: '#b8d0e4',
     fontFamily: "'IBM Plex Sans Arabic', sans-serif",
     borderRadius: '0.8rem',
   },
   elements: {
     rootBox: 'w-full flex justify-center',
-    cardBox: 'bg-[#fbfaf6] rounded-2xl w-[440px] max-w-full overflow-hidden',
+    cardBox: 'bg-[#f7fbff]/85 border border-white/80 shadow-xl backdrop-blur-xl rounded-2xl w-[440px] max-w-full overflow-hidden',
     card: '!shadow-none !border-0 !bg-transparent !rounded-none',
     footer: '!shadow-none !border-0 !bg-transparent !rounded-none',
-    headerTitle: 'text-[#293645] font-bold',
-    headerSubtitle: 'text-[#777e7b]',
-    socialButtonsBlockButtonText: 'text-[#39464d]',
+    headerTitle: 'text-[#203b58] font-bold',
+    headerSubtitle: 'text-[#6b8093]',
+    socialButtonsBlockButtonText: 'text-[#355570]',
     formFieldLabel: 'text-[#59625e]',
-    footerActionLink: 'text-[#a85837] font-semibold',
-    footerActionText: 'text-[#777e7b]',
-    dividerText: 'text-[#777e7b]',
-    identityPreviewEditButton: 'text-[#a85837]',
+    footerActionLink: 'text-[#347bb8] font-semibold',
+    footerActionText: 'text-[#6b8093]',
+    dividerText: 'text-[#6b8093]',
+    identityPreviewEditButton: 'text-[#347bb8]',
     formFieldSuccessText: 'text-[#47745d]',
     alertText: 'text-[#8f4e3b]',
     logoBox: 'rounded-xl overflow-hidden',
     logoImage: 'rounded-xl',
-    socialButtonsBlockButton: 'border-[#ded9cf] bg-[#fffdf9]',
-    formButtonPrimary: 'bg-[#a85837] hover:bg-[#8f482b] text-white',
-    formFieldInput: 'border-[#ded9cf] bg-[#fffdf9] text-[#293645]',
+    socialButtonsBlockButton: 'border-[#b8d0e4] bg-[#fafdff]',
+    formButtonPrimary: 'bg-[#347bb8] hover:bg-[#286899] text-white',
+    formFieldInput: 'border-[#b8d0e4] bg-[#fafdff] text-[#294865]',
     footerAction: 'border-t border-[#eeeae1]',
     dividerLine: 'bg-[#e7e1d6]',
-    alert: 'bg-[#f7e9e3] border-[#eed2c7]',
-    otpCodeFieldInput: 'border-[#ded9cf] bg-[#fffdf9] text-[#293645]',
-    formFieldRow: 'text-[#39464d]',
-    main: 'text-[#293645]',
+    alert: 'bg-[#fae1e5] border-[#ce8d97]',
+    otpCodeFieldInput: 'border-[#b8d0e4] bg-[#fafdff] text-[#294865]',
+    formFieldRow: 'text-[#355570]',
+    main: 'text-[#203b58]',
   },
 };
 
@@ -114,7 +114,7 @@ function ClerkQueryClientCacheInvalidator() {
 function SignInPage() {
   return (
     <div className="landing" dir="rtl" style={{ minHeight: '100dvh', display: 'grid', placeItems: 'center', padding: 20 }}>
-      <div style={{ position: 'fixed', top: 20, right: 24, display: 'flex', alignItems: 'center', gap: 10, fontWeight: 800, color: '#293645' }}>
+      <div style={{ position: 'fixed', top: 20, right: 24, display: 'flex', alignItems: 'center', gap: 10, fontWeight: 800, color: '#203b58' }}>
         <img src={`${basePath}/logo.svg`} alt="" width="35" height="35" />
         تاجر ذكي
       </div>
@@ -130,7 +130,7 @@ function SignInPage() {
 function SignUpPage() {
   return (
     <div className="landing" dir="rtl" style={{ minHeight: '100dvh', display: 'grid', placeItems: 'center', padding: 20 }}>
-      <div style={{ position: 'fixed', top: 20, right: 24, display: 'flex', alignItems: 'center', gap: 10, fontWeight: 800, color: '#293645' }}>
+      <div style={{ position: 'fixed', top: 20, right: 24, display: 'flex', alignItems: 'center', gap: 10, fontWeight: 800, color: '#203b58' }}>
         <img src={`${basePath}/logo.svg`} alt="" width="35" height="35" />
         تاجر ذكي
       </div>
@@ -228,6 +228,16 @@ function ClerkProviderWithRoutes() {
             actionLink: 'تسجيل الدخول',
           },
         },
+        formFieldLabel__emailAddress: 'البريد الإلكتروني',
+        formFieldLabel__password: 'كلمة المرور',
+        formFieldLabel__firstName: 'الاسم الأول',
+        formFieldLabel__lastName: 'اسم العائلة',
+        formFieldInputPlaceholder__emailAddress: 'أدخل بريدك الإلكتروني',
+        formFieldInputPlaceholder__password: 'أدخل كلمة المرور',
+        formFieldInputPlaceholder__firstName: 'أدخل اسمك',
+        formFieldInputPlaceholder__lastName: 'أدخل اسم عائلتك',
+        formButtonPrimary: 'متابعة',
+        dividerText: 'أو',
       }}
       routerPush={(to) => setLocation(stripBase(to))}
       routerReplace={(to) => setLocation(stripBase(to), { replace: true })}

@@ -44,7 +44,7 @@ export function PaymentsTable({ payments }: { payments: StorePayment[] }) {
                   </div>
                 </td>
                 <td>{payment.productTitle || 'منتج غير محدد'}</td>
-                <td style={{ fontWeight: 700, color: '#39464d' }}>{formatMoney(payment.amount, payment.currency)}</td>
+                <td style={{ fontWeight: 700, color: '#355570' }}>{formatMoney(payment.amount, payment.currency)}</td>
                 <td><span className={`status-pill ${status.tone}`}>{status.label}</span></td>
                 <td>{formatDate(payment.createdAt)}</td>
               </tr>

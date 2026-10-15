@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useClerk, useUser } from '@clerk/react';
+import { getGetWhopStatusQueryKey, useGetWhopStatus } from '@workspace/api-client-react';
 import {
   Activity,
   Bot,
@@ -11,6 +12,8 @@ import {
   ShoppingBag,
   Sparkles,
 } from 'lucide-react';
+import { FeminineRobotAvatar } from './FeminineRobotAvatar';
+import { integrationStatusLabel } from '../lib/integration-status';
 
 const navigation = [
   { href: '/dashboard', label: 'نظرة عامة', icon: LayoutDashboard },
@@ -25,6 +28,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const { user } = useUser();
   const { signOut } = useClerk();
+  const whopStatus = useGetWhopStatus({ query: { queryKey: getGetWhopStatusQueryKey() } });
+  const storeStatus = integrationStatusLabel(whopStatus.data?.whop);
   const initials = user?.firstName?.slice(0, 1) || user?.primaryEmailAddress?.emailAddress?.slice(0, 1) || 'م';
 
   return (
@@ -32,7 +37,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <aside className="sidebar">
         <div className="brand-row">
           <div className="brand-mark">
-            <Bot size={23} strokeWidth={2.2} />
+            <FeminineRobotAvatar size={34} decorative />
           </div>
           <div className="brand-title">
             تاجر ذكي
@@ -55,7 +60,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
         <div className="sidebar-bottom">
           <div className="robot-card">
-            <Sparkles size={17} color="#e7b76c" />
+            <Sparkles size={17} color="#8fc8f1" />
             <strong>متجرك، من مكان واحد</strong>
             <p>تابع المنتجات والمدفوعات وحالة الخدمات دون أن تفقد الصورة الكبيرة.</p>
           </div>
@@ -75,9 +80,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <header className="topbar" dir="rtl">
           <div className="breadcrumb">متجري <span style={{ padding: '0 7px' }}>/</span> مساحة العمل</div>
           <div className="topbar-actions">
-            <div className="service-chip">
+            <div className="service-chip" title="الحالة من واجهة تكامل Whop">
               <i className="service-dot" />
-              <span>المتجر متصل</span>
+              <span>{whopStatus.isLoading ? 'جارٍ التحقق' : whopStatus.isError ? 'الحالة غير مؤكدة' : storeStatus.label}</span>
             </div>
             <div className="avatar-initials" aria-label="حساب المستخدم">{initials}</div>
           </div>

@@ -1,0 +1,1 @@
+- [Free-only integrations](free-only-integrations.md) — keep AI and external-service features disabled unless the user can use them without paid upgrades or charges.

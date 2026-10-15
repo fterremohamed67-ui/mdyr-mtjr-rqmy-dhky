@@ -18,7 +18,7 @@ export function SalesPage() {
         />
         <div className="banner" style={{ marginBottom: 17 }}>
           <span>i</span>
-          <div><strong>ملاحظة حول البيانات</strong>حساب Whop متصل لكن صلاحية company:basic:read مطلوبة للوصول إلى بيانات الشركة. قد لا يتوفر السجل حتى تكتمل الصلاحية.</div>
+          <div><strong>سجل مباشر من Whop</strong>تظهر هنا المدفوعات التي أعادتها الخدمة فقط. لا نضيف معاملات تجريبية إلى السجل.</div>
         </div>
         {payments.isLoading && (
           <div className="panel" style={{ padding: 23, display: 'grid', gap: 18 }}>
@@ -33,7 +33,7 @@ export function SalesPage() {
                 <h2 className="panel-title">سجل المدفوعات</h2>
                 <div className="panel-subtitle">{payments.data.length.toLocaleString('ar')} سجل ضمن الاستجابة الحالية</div>
               </div>
-              <CreditCard size={18} color="#a85837" />
+              <CreditCard size={18} color="#397db7" />
             </div>
             <PaymentsTable payments={payments.data} />
           </section>

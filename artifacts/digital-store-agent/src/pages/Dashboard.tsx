@@ -5,6 +5,7 @@ import { AppShell } from '../components/AppShell';
 import { IntegrationStatusPanel } from '../components/IntegrationStatusPanel';
 import { PaymentsTable } from '../components/PaymentsTable';
 import { ErrorState, LoadingCards, PageHeading, formatMoney } from '../components/Shared';
+import { integrationStatusLabel } from '../lib/integration-status';
 
 export function DashboardPage() {
   const overview = useGetStoreOverview({ query: { queryKey: getGetStoreOverviewQueryKey() } });
@@ -48,7 +49,7 @@ export function DashboardPage() {
                 <span>!</span>
                 <div>
                   <strong>بعض بيانات المتجر قد لا تكون مكتملة</strong>
-                  حالة التكامل: {overview.data.integrationState}. تحقق من صلاحيات Whop قبل الاعتماد على هذه القراءة.
+                  حالة تكامل Whop: {integrationStatusLabel(overview.data.integrationState).label}. راجع حالة الخدمة قبل الاعتماد على هذه القراءة.
                 </div>
               </div>
             )}

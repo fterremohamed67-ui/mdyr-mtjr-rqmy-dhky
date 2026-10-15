@@ -64,7 +64,7 @@ export function ProductsPage() {
         />
         <div className="banner" style={{ marginBottom: 17 }}>
           <span>i</span>
-          <div><strong>حالة اتصال Whop</strong>الحساب متصل، لكن صلاحية company:basic:read غير متاحة حالياً. قد تفشل قراءة الخطط أو عمليات الإنشاء؛ سنعرض خطأ الخدمة كما هو.</div>
+          <div><strong>كتالوج مباشر</strong>الخطط المعروضة وما يُنشأ من هنا يُرسل إلى Whop. هذه القائمة لا تحتوي على منتجات تجريبية.</div>
         </div>
         {actionError && <div className="banner danger" role="alert" style={{ marginBottom: 14 }}><div><strong>لم يكتمل الإجراء</strong>{actionError}</div></div>}
         {actionSuccess && <div className="banner info" role="status" style={{ marginBottom: 14 }}><div>{actionSuccess}</div></div>}

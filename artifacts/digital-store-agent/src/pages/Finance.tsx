@@ -1,12 +1,15 @@
-import { getGetStoreOverviewQueryKey, getListStorePaymentsQueryKey, useGetStoreOverview, useListStorePayments } from '@workspace/api-client-react';
+import { getGetStoreOverviewQueryKey, getGetWhopStatusQueryKey, getListStorePaymentsQueryKey, useGetStoreOverview, useGetWhopStatus, useListStorePayments } from '@workspace/api-client-react';
 import { ArrowDownToLine, CircleDollarSign, FileClock } from 'lucide-react';
 import { AppShell } from '../components/AppShell';
 import { PaymentsTable } from '../components/PaymentsTable';
 import { ErrorState, PageHeading, formatMoney, getErrorMessage } from '../components/Shared';
+import { integrationStatusLabel } from '../lib/integration-status';
 
 export function FinancePage() {
   const overview = useGetStoreOverview({ query: { queryKey: getGetStoreOverviewQueryKey() } });
   const payments = useListStorePayments({ query: { queryKey: getListStorePaymentsQueryKey() } });
+  const services = useGetWhopStatus({ query: { queryKey: getGetWhopStatusQueryKey() } });
+  const binanceStatus = integrationStatusLabel(services.data?.binance);
 
   return (
     <AppShell>
@@ -31,7 +34,7 @@ export function FinancePage() {
           <section className="panel">
             <div className="panel-head">
               <div><h2 className="panel-title">سجل الدفع</h2><div className="panel-subtitle">المدفوعات التي أعادتها الخدمة فقط</div></div>
-              <CircleDollarSign size={18} color="#a85837" />
+              <CircleDollarSign size={18} color="#397db7" />
             </div>
             {payments.isLoading && <div style={{ padding: 22 }}><div className="skeleton" style={{ width: '80%' }} /></div>}
             {payments.data && <PaymentsTable payments={payments.data} />}
@@ -40,18 +43,18 @@ export function FinancePage() {
           <section className="panel">
             <div className="panel-head">
               <div><h2 className="panel-title">التحويلات والتقارير</h2><div className="panel-subtitle">حالة عمليات الصرف</div></div>
-              <FileClock size={18} color="#a85837" />
+              <FileClock size={18} color="#397db7" />
             </div>
             <div style={{ padding: '0 20px 20px' }}>
-              <div className="banner danger">
+              <div className="banner">
                 <ArrowDownToLine size={17} />
                 <div>
-                  <strong>التحويلات غير متاحة</strong>
-                  تكامل Binance غير متاح حالياً. لا توجد بيانات تحويل يمكن عرضها أو تصديرها.
+                  <strong>حالة تكامل التحويلات</strong>
+                  {services.isLoading ? 'جارٍ التحقق من حالة Binance.' : services.isError ? 'تعذر تأكيد الحالة الحالية لـ Binance.' : `الحالة من الخدمة: ${binanceStatus.label}.`}
                 </div>
               </div>
-              <div style={{ marginTop: 13, color: '#8a908a', fontSize: 10, lineHeight: 1.8 }}>
-                لا يتم إنشاء رصيد أو حالة صرف تقديرية. ستظهر التقارير عند توفر مصدر بيانات موثوق.
+              <div style={{ marginTop: 13, color: '#748da2', fontSize: 10, lineHeight: 1.8 }}>
+                لا تعرض الواجهة سجلات تحويل أو تقرير صرف لأن مصدر بياناتها غير متوفر. لن ننشئ رصيداً أو سجلاً تقديرياً.
               </div>
             </div>
           </section>
