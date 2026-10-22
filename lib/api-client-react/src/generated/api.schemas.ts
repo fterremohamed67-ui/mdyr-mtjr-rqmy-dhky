@@ -151,12 +151,54 @@ export interface CheckoutLink {
   purchaseUrl: string;
 }
 
+export type AgentMessageInputHistoryItemRole = typeof AgentMessageInputHistoryItemRole[keyof typeof AgentMessageInputHistoryItemRole];
+
+
+export const AgentMessageInputHistoryItemRole = {
+  user: 'user',
+  assistant: 'assistant',
+} as const;
+
+export type AgentMessageInputHistoryItem = {
+  role: AgentMessageInputHistoryItemRole;
+  /**
+     * @minLength 1
+     * @maxLength 4000
+     */
+  content: string;
+};
+
+export type AgentMessageInputDigitalProductsItem = {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  title: string;
+  /** @maxLength 2000 */
+  description: string;
+  /** @exclusiveMinimum 0 */
+  price: number;
+  downloadUrl: string;
+};
+
 export interface AgentMessageInput {
   /**
      * @minLength 1
      * @maxLength 4000
      */
   message: string;
+  /** @maxItems 12 */
+  history?: AgentMessageInputHistoryItem[];
+  /** @maxItems 50 */
+  digitalProducts?: AgentMessageInputDigitalProductsItem[];
+}
+
+export interface AgentSpeechInput {
+  /**
+     * @minLength 1
+     * @maxLength 4000
+     */
+  text: string;
 }
 
 export type AgentMessageResponseLanguage = typeof AgentMessageResponseLanguage[keyof typeof AgentMessageResponseLanguage];
@@ -165,10 +207,51 @@ export type AgentMessageResponseLanguage = typeof AgentMessageResponseLanguage[k
 export const AgentMessageResponseLanguage = {
   ar: 'ar',
   en: 'en',
+  fr: 'fr',
 } as const;
+
+export interface DigitalProduct {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  downloadUrl: string;
+  createdAt: string;
+}
+
+export interface AgentAsset {
+  id: string;
+  name: string;
+  contentType: string;
+  size: number;
+  downloadUrl: string;
+  createdAt: string;
+}
 
 export interface AgentMessageResponse {
   reply: string;
   language: AgentMessageResponseLanguage;
+  generatedProduct?: DigitalProduct;
+  generatedAsset?: AgentAsset;
 }
 
+export interface CreateDigitalProductInput {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  title: string;
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  description: string;
+  /**
+     * @maximum 500
+     * @exclusiveMinimum 0
+     */
+  price: number;
+  downloadUrl?: string;
+  /** @maxLength 50000 */
+  content?: string;
+}

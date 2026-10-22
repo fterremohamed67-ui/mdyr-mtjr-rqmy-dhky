@@ -5,9 +5,13 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { AgentAsset } from './agentAsset';
 import type { AgentMessageResponseLanguage } from './agentMessageResponseLanguage';
+import type { DigitalProduct } from './digitalProduct';
 
 export interface AgentMessageResponse {
   reply: string;
   language: AgentMessageResponseLanguage;
+  generatedProduct?: DigitalProduct;
+  generatedAsset?: AgentAsset;
 }

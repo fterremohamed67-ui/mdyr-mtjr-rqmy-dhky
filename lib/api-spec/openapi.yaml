@@ -213,6 +213,197 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
+  /digital-products:
+    get:
+      operationId: listDigitalProducts
+      tags: [digital-products]
+      summary: List the authenticated user's digital products
+      responses:
+        "200":
+          description: Digital product catalog
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DigitalProduct"
+        "401":
+          description: Sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    post:
+      operationId: createDigitalProduct
+      tags: [digital-products]
+      summary: Add a digital product to the authenticated user's catalog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDigitalProductInput"
+      responses:
+        "201":
+          description: Created digital product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DigitalProduct"
+        "400":
+          description: Invalid product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /digital-products/{id}:
+    delete:
+      operationId: deleteDigitalProduct
+      tags: [digital-products]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Product deleted
+        "404":
+          description: Product not found
+  /digital-products/{id}/download:
+    get:
+      operationId: downloadDigitalProduct
+      tags: [digital-products]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Download the generated Markdown product
+          content:
+            text/markdown:
+              schema:
+                type: string
+  /agent/speech:
+    post:
+      operationId: synthesizeAgentSpeech
+      tags: [agent]
+      summary: Synthesize assistant speech using the configured server-side provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentSpeechInput"
+      responses:
+        "200":
+          description: Synthesized audio
+          content:
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+            audio/wav:
+              schema:
+                type: string
+                format: binary
+        "401":
+          description: Sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "503":
+          description: Speech provider is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /agent/assets:
+    get:
+      operationId: listAgentAssets
+      tags: [agent-assets]
+      summary: List uploaded assets for the authenticated user
+      responses:
+        "200":
+          description: Uploaded assets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AgentAsset"
+    post:
+      operationId: uploadAgentAsset
+      tags: [agent-assets]
+      summary: Upload an asset up to 20 MB
+      parameters:
+        - in: header
+          name: X-Asset-Name
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: X-Asset-Type
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "201":
+          description: Uploaded asset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentAsset"
+        "400":
+          description: Invalid upload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /agent/assets/{id}:
+    delete:
+      operationId: deleteAgentAsset
+      tags: [agent-assets]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Asset deleted
+        "404":
+          description: Asset not found
+  /agent/assets/{id}/download:
+    get:
+      operationId: downloadAgentAsset
+      tags: [agent-assets]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Download asset
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
 components:
   schemas:
     HealthStatus:
@@ -351,6 +542,48 @@ components:
           type: string
           minLength: 1
           maxLength: 4000
+        history:
+          type: array
+          maxItems: 12
+          items:
+            type: object
+            required: [role, content]
+            properties:
+              role:
+                type: string
+                enum: [user, assistant]
+              content:
+                type: string
+                minLength: 1
+                maxLength: 4000
+        digitalProducts:
+          type: array
+          maxItems: 50
+          items:
+            type: object
+            required: [title, description, price, downloadUrl]
+            properties:
+              title:
+                type: string
+                minLength: 1
+                maxLength: 120
+              description:
+                type: string
+                maxLength: 2000
+              price:
+                type: number
+                exclusiveMinimum: 0
+              downloadUrl:
+                type: string
+                format: uri
+    AgentSpeechInput:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 4000
     AgentMessageResponse:
       type: object
       required: [reply, language]
@@ -360,4 +593,66 @@ components:
         language:
           type: string
           enum: [ar, en]
+        generatedProduct:
+          $ref: "#/components/schemas/DigitalProduct"
+        generatedAsset:
+          $ref: "#/components/schemas/AgentAsset"
+    AgentAsset:
+      type: object
+      required: [id, name, contentType, size, downloadUrl, createdAt]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        contentType:
+          type: string
+        size:
+          type: integer
+        downloadUrl:
+          type: string
+          format: uri
+        createdAt:
+          type: string
+          format: date-time
+    DigitalProduct:
+      type: object
+      required: [id, title, description, price, downloadUrl, createdAt]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        downloadUrl:
+          type: string
+          format: uri
+        createdAt:
+          type: string
+          format: date-time
+    CreateDigitalProductInput:
+      type: object
+      required: [title, description, price]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        price:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 500
+        downloadUrl:
+          type: string
+          format: uri
+        content:
+          type: string
+          maxLength: 50000
 

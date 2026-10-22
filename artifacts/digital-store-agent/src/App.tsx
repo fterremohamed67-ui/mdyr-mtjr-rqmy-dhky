@@ -15,6 +15,7 @@ import { HomePage } from './pages/Home';
 import { ProductsPage } from './pages/Products';
 import { SalesPage } from './pages/Sales';
 import { SettingsPage } from './pages/Settings';
+import { isLocalPreview } from './lib/local-preview';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,10 +26,12 @@ const queryClient = new QueryClient({
   },
 });
 
-const clerkPubKey = publishableKeyFromHost(
-  window.location.hostname,
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
-);
+const clerkPubKey = isLocalPreview
+  ? undefined
+  : publishableKeyFromHost(
+      window.location.hostname,
+      import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
+    );
 
 const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -39,7 +42,7 @@ function stripBase(path: string) {
     : path;
 }
 
-if (!clerkPubKey) {
+if (!clerkPubKey && !isLocalPreview) {
   throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY in .env file');
 }
 
@@ -144,6 +147,11 @@ function SignUpPage() {
 }
 
 function ProtectedPage({ children }: { children: ReactNode }) {
+  if (isLocalPreview) return <>{children}</>;
+  return <ClerkProtectedPage>{children}</ClerkProtectedPage>;
+}
+
+function ClerkProtectedPage({ children }: { children: ReactNode }) {
   const { isLoaded, isSignedIn } = useAuth();
   if (!isLoaded) {
     return (
@@ -167,9 +175,13 @@ function AppRoutes() {
   return (
     <ErrorBoundary resetKey={location}>
       <Switch>
-        <Route path="/" component={HomePage} />
-        <Route path="/sign-in/*?" component={SignInPage} />
-        <Route path="/sign-up/*?" component={SignUpPage} />
+        <Route path="/" component={isLocalPreview ? LocalPreviewRedirect : HomePage} />
+        <Route path="/sign-in/*?">
+          {isLocalPreview ? <Redirect to="/assistant" /> : <SignInPage />}
+        </Route>
+        <Route path="/sign-up/*?">
+          {isLocalPreview ? <Redirect to="/assistant" /> : <SignUpPage />}
+        </Route>
         <Route path="/dashboard">
           <ProtectedPage><DashboardPage /></ProtectedPage>
         </Route>
@@ -201,12 +213,16 @@ function AppRoutes() {
   );
 }
 
+function LocalPreviewRedirect() {
+  return <Redirect to="/assistant" />;
+}
+
 function ClerkProviderWithRoutes() {
   const [, setLocation] = useLocation();
 
   return (
     <ClerkProvider
-      publishableKey={clerkPubKey}
+      publishableKey={clerkPubKey!}
       proxyUrl={clerkProxyUrl}
       appearance={clerkAppearance}
       signInUrl={`${basePath}/sign-in`}
@@ -253,7 +269,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={basePath}>
-          <ClerkProviderWithRoutes />
+          {isLocalPreview ? <AppRoutes /> : <ClerkProviderWithRoutes />}
         </WouterRouter>
         <Toaster />
       </TooltipProvider>

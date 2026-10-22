@@ -12,4 +12,5 @@ export type AgentMessageResponseLanguage = typeof AgentMessageResponseLanguage[k
 export const AgentMessageResponseLanguage = {
   ar: 'ar',
   en: 'en',
+  fr: 'fr',
 } as const;

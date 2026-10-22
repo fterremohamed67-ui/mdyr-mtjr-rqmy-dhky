@@ -6,11 +6,18 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './agentAsset';
 export * from './agentMessageInput';
+export * from './agentMessageInputDigitalProductsItem';
+export * from './agentMessageInputHistoryItem';
+export * from './agentMessageInputHistoryItemRole';
 export * from './agentMessageResponse';
 export * from './agentMessageResponseLanguage';
+export * from './agentSpeechInput';
 export * from './checkoutInput';
 export * from './checkoutLink';
+export * from './createDigitalProductInput';
+export * from './digitalProduct';
 export * from './errorEnvelope';
 export * from './healthStatus';
 export * from './integrationStatus';

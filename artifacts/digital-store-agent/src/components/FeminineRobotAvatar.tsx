@@ -1,4 +1,8 @@
+import { useId } from 'react';
+
 export function FeminineRobotAvatar({ size = 44, decorative = false }: { size?: number; decorative?: boolean }) {
+  const gradientId = useId().replace(/:/g, '');
+
   return (
     <svg
       width={size}
@@ -6,26 +10,42 @@ export function FeminineRobotAvatar({ size = 44, decorative = false }: { size?: 
       viewBox="0 0 120 140"
       fill="none"
       role={decorative ? undefined : 'img'}
-      aria-label={decorative ? undefined : 'رُبى، مساعدة المتجر الرقمية'}
+      aria-label={decorative ? undefined : 'روبي، مساعدة المتجر الرقمية'}
       aria-hidden={decorative}
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M23 67C15 41 27 17 53 12C79 6 100 23 98 51C97 69 102 86 108 103L91 119L27 115L11 96C19 88 24 78 23 67Z" fill="#4B94CC" />
-      <path d="M31 42C36 22 55 14 72 19C86 22 94 34 94 49L83 44C75 38 63 35 51 40L31 49V42Z" fill="#75B6E3" />
-      <path d="M30 45C21 54 19 72 25 87L35 78L36 53L30 45Z" fill="#367DB7" />
-      <path d="M91 45C101 53 101 71 95 86L85 78L85 52L91 45Z" fill="#367DB7" />
-      <rect x="22" y="37" width="76" height="71" rx="31" fill="#DDF2FF" stroke="#F7FCFF" strokeWidth="3" />
-      <path d="M36 66C40 60 47 60 52 66" stroke="#2E668F" strokeWidth="3" strokeLinecap="round" />
-      <path d="M67 66C72 60 79 60 84 66" stroke="#2E668F" strokeWidth="3" strokeLinecap="round" />
-      <path d="M38 73C42 78 49 78 53 73" stroke="#25668F" strokeWidth="4" strokeLinecap="round" />
-      <path d="M67 73C71 78 78 78 82 73" stroke="#25668F" strokeWidth="4" strokeLinecap="round" />
-      <path d="M57 80L54 87C58 90 63 90 67 87L64 80" fill="#A6D9EE" />
-      <path d="M51 96C56 101 65 101 70 96" stroke="#397CAD" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="30" cy="83" r="4" fill="#82C9E6" fillOpacity=".6" />
-      <circle cx="90" cy="83" r="4" fill="#82C9E6" fillOpacity=".6" />
-      <path d="M18 120C27 108 40 105 60 105C80 105 93 108 102 120V135H18V120Z" fill="#B7DDF6" stroke="#F7FCFF" strokeWidth="3" />
-      <path d="M49 109L60 119L71 109" stroke="#4B94CC" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="60" cy="12" r="5" fill="#A7E5F2" stroke="#F7FCFF" strokeWidth="2" />
+      <defs>
+        <linearGradient id={`${gradientId}-shell`} x1="19" y1="14" x2="103" y2="112" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#A9F5FF" />
+          <stop offset=".48" stopColor="#4BB8E8" />
+          <stop offset="1" stopColor="#17649D" />
+        </linearGradient>
+        <linearGradient id={`${gradientId}-visor`} x1="29" y1="43" x2="91" y2="100" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#153857" />
+          <stop offset="1" stopColor="#081A30" />
+        </linearGradient>
+        <linearGradient id={`${gradientId}-body`} x1="28" y1="108" x2="87" y2="139" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#5BD9F5" />
+          <stop offset="1" stopColor="#2675B5" />
+        </linearGradient>
+      </defs>
+      <path d="M60 7L69 17H51L60 7Z" fill="#8DF4FF" />
+      <path d="M55 16H65V25H55z" fill="#2E8FC3" />
+      <circle cx="60" cy="11" r="3" fill="#E4FFFF" />
+      <path d="M21 55L29 28L47 17H73L91 28L99 55L94 91L79 108H41L26 91L21 55Z" fill={`url(#${gradientId}-shell)`} stroke="#B8F7FF" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M29 48L36 33L48 25H72L84 33L91 48L87 78L76 91H44L33 78L29 48Z" fill={`url(#${gradientId}-visor)`} stroke="#72E7FF" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M38 58L45 53H53L57 58V65H39L36 62L38 58Z" fill="#72F1FF" />
+      <path d="M82 58L75 53H67L63 58V65H81L84 62L82 58Z" fill="#72F1FF" />
+      <path d="M42 59H52M68 59H78" stroke="#EDFFFF" strokeOpacity=".9" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M55 71H65L69 77L65 83H55L51 77L55 71Z" fill="#1C84B9" stroke="#59DDF8" strokeWidth="1.5" />
+      <path d="M53 87H67" stroke="#73EDFF" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M21 49L12 55V77L27 83L29 72L25 58L21 49Z" fill="#267CB2" stroke="#72DDF6" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M99 49L108 55V77L93 83L91 72L95 58L99 49Z" fill="#267CB2" stroke="#72DDF6" strokeWidth="2" strokeLinejoin="round" />
+      <circle cx="19" cy="66" r="3" fill="#B4F9FF" />
+      <circle cx="101" cy="66" r="3" fill="#B4F9FF" />
+      <path d="M38 104L28 112L23 135H97L92 112L82 104L75 114H45L38 104Z" fill={`url(#${gradientId}-body)`} stroke="#A9F4FF" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M48 109L60 121L72 109" stroke="#D2FBFF" strokeOpacity=".85" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M42 128H78" stroke="#80E9FA" strokeOpacity=".65" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }

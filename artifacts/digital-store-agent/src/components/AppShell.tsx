@@ -14,26 +14,54 @@ import {
 } from 'lucide-react';
 import { FeminineRobotAvatar } from './FeminineRobotAvatar';
 import { integrationStatusLabel } from '../lib/integration-status';
+import { isLocalPreview } from '../lib/local-preview';
 
 const navigation = [
-  { href: '/dashboard', label: 'نظرة عامة', icon: LayoutDashboard },
+  { href: '/assistant', label: 'المساعد', icon: Bot },
   { href: '/products', label: 'المنتجات', icon: Package },
   { href: '/sales', label: 'المبيعات', icon: ShoppingBag },
-  { href: '/assistant', label: 'المساعد', icon: Bot },
   { href: '/finance', label: 'المالية', icon: CircleDollarSign },
+  { href: '/dashboard', label: 'نظرة عامة', icon: LayoutDashboard },
   { href: '/settings', label: 'الإعدادات', icon: Settings2 },
 ];
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, appearance = 'default' }: { children: ReactNode; appearance?: 'default' | 'assistant' }) {
   const [location] = useLocation();
+  if (isLocalPreview) {
+    return <AppShellLayout appearance={appearance} location={location} initials="م">{children}</AppShellLayout>;
+  }
+  return <AuthenticatedAppShell appearance={appearance} location={location}>{children}</AuthenticatedAppShell>;
+}
+
+function AuthenticatedAppShell({ children, appearance, location }: { children: ReactNode; appearance: 'default' | 'assistant'; location: string }) {
   const { user } = useUser();
   const { signOut } = useClerk();
-  const whopStatus = useGetWhopStatus({ query: { queryKey: getGetWhopStatusQueryKey() } });
-  const storeStatus = integrationStatusLabel(whopStatus.data?.whop);
   const initials = user?.firstName?.slice(0, 1) || user?.primaryEmailAddress?.emailAddress?.slice(0, 1) || 'م';
 
   return (
-    <div className="app-shell" dir="rtl">
+    <AppShellLayout
+      appearance={appearance}
+      location={location}
+      initials={initials}
+      onSignOut={() => signOut({ redirectUrl: import.meta.env.BASE_URL || '/' })}
+    >
+      {children}
+    </AppShellLayout>
+  );
+}
+
+function AppShellLayout({ children, appearance, location, initials, onSignOut }: {
+  children: ReactNode;
+  appearance: 'default' | 'assistant';
+  location: string;
+  initials: string;
+  onSignOut?: () => void;
+}) {
+  const whopStatus = useGetWhopStatus({ query: { queryKey: getGetWhopStatusQueryKey() } });
+  const storeStatus = integrationStatusLabel(whopStatus.data?.whop);
+
+  return (
+    <div className={`app-shell ${appearance === 'assistant' ? 'app-shell-assistant' : ''}`} dir="rtl">
       <aside className="sidebar">
         <div className="brand-row">
           <div className="brand-mark">
@@ -64,16 +92,18 @@ export function AppShell({ children }: { children: ReactNode }) {
             <strong>متجرك، من مكان واحد</strong>
             <p>تابع المنتجات والمدفوعات وحالة الخدمات دون أن تفقد الصورة الكبيرة.</p>
           </div>
-          <button
-            className="nav-link"
-            style={{ width: '100%', marginTop: 13, border: 0, background: 'transparent' }}
-            type="button"
-            data-testid="button-sign-out"
-            onClick={() => signOut({ redirectUrl: import.meta.env.BASE_URL || '/' })}
-          >
-            <Activity size={17} />
-            <span>تسجيل الخروج</span>
-          </button>
+          {onSignOut && (
+            <button
+              className="nav-link"
+              style={{ width: '100%', marginTop: 13, border: 0, background: 'transparent' }}
+              type="button"
+              data-testid="button-sign-out"
+              onClick={onSignOut}
+            >
+              <Activity size={17} />
+              <span>تسجيل الخروج</span>
+            </button>
+          )}
         </div>
       </aside>
       <div className="main-area">

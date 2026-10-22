@@ -5,6 +5,8 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { AgentMessageInputDigitalProductsItem } from './agentMessageInputDigitalProductsItem';
+import type { AgentMessageInputHistoryItem } from './agentMessageInputHistoryItem';
 
 export interface AgentMessageInput {
   /**
@@ -12,4 +14,8 @@ export interface AgentMessageInput {
      * @maxLength 4000
      */
   message: string;
+  /** @maxItems 12 */
+  history?: AgentMessageInputHistoryItem[];
+  /** @maxItems 50 */
+  digitalProducts?: AgentMessageInputDigitalProductsItem[];
 }

@@ -133,15 +133,172 @@ export const ListStorePaymentsResponse = zod.array(ListStorePaymentsResponseItem
  */
 export const sendAgentMessageBodyMessageMax = 4000;
 
+export const sendAgentMessageBodyHistoryItemContentMax = 4000;
+
+export const sendAgentMessageBodyHistoryMax = 12;
+
+export const sendAgentMessageBodyDigitalProductsItemTitleMax = 120;
+
+export const sendAgentMessageBodyDigitalProductsItemDescriptionMax = 2000;
+
+export const sendAgentMessageBodyDigitalProductsItemPriceExclusiveMin = 0;
+
+export const sendAgentMessageBodyDigitalProductsMax = 50;
+
 
 
 export const SendAgentMessageBody = zod.object({
-  "message": zod.string().min(1).max(sendAgentMessageBodyMessageMax)
+  "message": zod.string().min(1).max(sendAgentMessageBodyMessageMax),
+  "history": zod.array(zod.object({
+  "role": zod.enum(['user', 'assistant']),
+  "content": zod.string().min(1).max(sendAgentMessageBodyHistoryItemContentMax)
+})).max(sendAgentMessageBodyHistoryMax).optional(),
+  "digitalProducts": zod.array(zod.object({
+  "title": zod.string().min(1).max(sendAgentMessageBodyDigitalProductsItemTitleMax),
+  "description": zod.string().max(sendAgentMessageBodyDigitalProductsItemDescriptionMax),
+  "price": zod.number().gt(sendAgentMessageBodyDigitalProductsItemPriceExclusiveMin),
+  "downloadUrl": zod.string().url()
+})).max(sendAgentMessageBodyDigitalProductsMax).optional()
 })
 
 export const SendAgentMessageResponse = zod.object({
   "reply": zod.string(),
-  "language": zod.enum(['ar', 'en'])
+  "language": zod.enum(['ar', 'en', 'fr']),
+  "generatedProduct": zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "description": zod.string(),
+  "price": zod.number(),
+  "downloadUrl": zod.string().url(),
+  "createdAt": zod.coerce.date()
+}).optional(),
+  "generatedAsset": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "contentType": zod.string(),
+  "size": zod.number().int(),
+  "downloadUrl": zod.string().url(),
+  "createdAt": zod.coerce.date()
+}).optional()
 })
 
+
+/**
+ * @summary List the authenticated user's digital products
+ */
+export const ListDigitalProductsResponseItem = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "description": zod.string(),
+  "price": zod.number(),
+  "downloadUrl": zod.string().url(),
+  "createdAt": zod.coerce.date()
+})
+export const ListDigitalProductsResponse = zod.array(ListDigitalProductsResponseItem)
+
+
+/**
+ * @summary Add a digital product to the authenticated user's catalog
+ */
+export const createDigitalProductBodyTitleMax = 120;
+
+export const createDigitalProductBodyDescriptionMax = 2000;
+
+export const createDigitalProductBodyPriceExclusiveMin = 0;
+export const createDigitalProductBodyPriceMax = 500;
+
+export const createDigitalProductBodyContentMax = 50000;
+
+
+
+export const CreateDigitalProductBody = zod.object({
+  "title": zod.string().min(1).max(createDigitalProductBodyTitleMax),
+  "description": zod.string().min(1).max(createDigitalProductBodyDescriptionMax),
+  "price": zod.number().gt(createDigitalProductBodyPriceExclusiveMin).max(createDigitalProductBodyPriceMax),
+  "downloadUrl": zod.string().url().optional(),
+  "content": zod.string().max(createDigitalProductBodyContentMax).optional()
+})
+
+export const CreateDigitalProductResponse = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "description": zod.string(),
+  "price": zod.number(),
+  "downloadUrl": zod.string().url(),
+  "createdAt": zod.coerce.date()
+})
+
+
+export const DeleteDigitalProductParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DeleteDigitalProductResponse = zod.void()
+
+
+export const DownloadDigitalProductParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DownloadDigitalProductResponse = zod.unknown()
+
+
+/**
+ * @summary Synthesize assistant speech using the configured server-side provider
+ */
+export const synthesizeAgentSpeechBodyTextMax = 4000;
+
+
+
+export const SynthesizeAgentSpeechBody = zod.object({
+  "text": zod.string().min(1).max(synthesizeAgentSpeechBodyTextMax)
+})
+
+export const SynthesizeAgentSpeechResponse = zod.unknown()
+
+
+/**
+ * @summary List uploaded assets for the authenticated user
+ */
+export const ListAgentAssetsResponseItem = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "contentType": zod.string(),
+  "size": zod.number().int(),
+  "downloadUrl": zod.string().url(),
+  "createdAt": zod.coerce.date()
+})
+export const ListAgentAssetsResponse = zod.array(ListAgentAssetsResponseItem)
+
+
+/**
+ * @summary Upload an asset up to 20 MB
+ */
+export const UploadAgentAssetHeader = zod.object({
+  "X-Asset-Name": zod.string(),
+  "X-Asset-Type": zod.string().optional()
+})
+
+export const UploadAgentAssetResponse = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "contentType": zod.string(),
+  "size": zod.number().int(),
+  "downloadUrl": zod.string().url(),
+  "createdAt": zod.coerce.date()
+})
+
+
+export const DeleteAgentAssetParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DeleteAgentAssetResponse = zod.void()
+
+
+export const DownloadAgentAssetParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DownloadAgentAssetResponse = zod.unknown()
 

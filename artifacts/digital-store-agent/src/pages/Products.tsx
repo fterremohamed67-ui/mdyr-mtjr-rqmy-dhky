@@ -1,38 +1,82 @@
-import { type FormEvent, useState } from 'react';
-import { useCreateStoreCheckout, useCreateStoreProduct, useListStorePlans, getListStorePlansQueryKey } from '@workspace/api-client-react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { useCreateDigitalProduct, useDeleteDigitalProduct, useGetWhopStatus, useListDigitalProducts, useCreateStoreCheckout, useListStorePlans, getListDigitalProductsQueryKey, getListStorePlansQueryKey } from '@workspace/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowUpLeft, Box, LoaderCircle, Plus, X } from 'lucide-react';
+import { ArrowUpLeft, Box, ExternalLink, LoaderCircle, Plus, Trash2, X } from 'lucide-react';
 import { AppShell } from '../components/AppShell';
 import { EmptyState, ErrorState, PageHeading, formatDate, formatMoney, getErrorMessage } from '../components/Shared';
+import { getLegacyDigitalProducts, removeLegacyDigitalProduct } from '../lib/digital-products';
 
 export function ProductsPage() {
   const queryClient = useQueryClient();
-  const plans = useListStorePlans({ query: { queryKey: getListStorePlansQueryKey() } });
-  const createProduct = useCreateStoreProduct();
+  const products = useListDigitalProducts();
+  const createDigitalProduct = useCreateDigitalProduct();
+  const deleteDigitalProduct = useDeleteDigitalProduct();
+  const whopStatus = useGetWhopStatus();
+  const plans = useListStorePlans({ query: { queryKey: getListStorePlansQueryKey(), enabled: whopStatus.data?.whop === 'ready' } });
+  const isWhopUnavailable = whopStatus.isError || (whopStatus.data && whopStatus.data.whop !== 'ready') || (plans.isError && typeof plans.error === 'object' && plans.error !== null && 'status' in plans.error && plans.error.status === 503);
   const checkout = useCreateStoreCheckout();
+  const digitalProducts = products.data ?? [];
   const [isOpen, setIsOpen] = useState(false);
   const [actionError, setActionError] = useState('');
   const [actionSuccess, setActionSuccess] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
-  const [language, setLanguage] = useState<'ar' | 'en'>('ar');
+  const [downloadUrl, setDownloadUrl] = useState('');
+  const migrationStarted = useRef(false);
+
+  useEffect(() => {
+    if (products.isLoading || products.isError || migrationStarted.current) return;
+    const legacyProducts = getLegacyDigitalProducts();
+    migrationStarted.current = true;
+    if (legacyProducts.length === 0) return;
+
+    void (async () => {
+      for (const product of legacyProducts) {
+        await createDigitalProduct.mutateAsync({
+          data: {
+            title: product.title,
+            description: product.description,
+            price: product.price,
+            downloadUrl: product.downloadUrl,
+          },
+        });
+        removeLegacyDigitalProduct(product.id);
+      }
+      await queryClient.invalidateQueries({ queryKey: getListDigitalProductsQueryKey() });
+      setActionSuccess('تم نقل منتجاتك المحفوظة سابقاً إلى كتالوج المتجر.');
+    })().catch((error: unknown) => {
+      migrationStarted.current = false;
+      setActionError(`تعذر نقل منتج محفوظ سابقاً. ${getErrorMessage(error)}`);
+    });
+  }, [createDigitalProduct.mutateAsync, products.isError, products.isLoading, queryClient]);
 
   const submitProduct = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setActionError('');
     setActionSuccess('');
-    createProduct.mutate(
-      { data: { title: title.trim(), description: description.trim(), price: Number(price), currency: 'usd', language } },
+    createDigitalProduct.mutate(
+      { data: { title: title.trim(), description: description.trim(), price: Number(price), downloadUrl: downloadUrl.trim() } },
       {
         onSuccess: async () => {
-          setActionSuccess('تم إرسال طلب إنشاء المنتج إلى Whop.');
+          setActionSuccess('تمت إضافة المنتج إلى كتالوجك الرقمي.');
           setIsOpen(false);
           setTitle('');
           setDescription('');
           setPrice('');
-          await queryClient.invalidateQueries({ queryKey: getListStorePlansQueryKey() });
+          setDownloadUrl('');
+          await queryClient.invalidateQueries({ queryKey: getListDigitalProductsQueryKey() });
         },
+        onError: (error) => setActionError(getErrorMessage(error)),
+      },
+    );
+  };
+
+  const removeDigitalProduct = (productId: string) => {
+    deleteDigitalProduct.mutate(
+      { id: productId },
+      {
+        onSuccess: async () => queryClient.invalidateQueries({ queryKey: getListDigitalProductsQueryKey() }),
         onError: (error) => setActionError(getErrorMessage(error)),
       },
     );
@@ -59,21 +103,49 @@ export function ProductsPage() {
         <PageHeading
           eyebrow="كتالوج المتجر"
           title="المنتجات"
-          description="خطط المنتجات والأسعار المتصلة بحساب Whop."
+          description="أدر منتجاتك الرقمية وروابط التنزيل، وتابع خطط الدفع المتصلة بـ Whop."
           action={<button className="btn-primary" type="button" onClick={() => { setActionError(''); setIsOpen(true); }} data-testid="button-create-product"><Plus size={15} /> منتج جديد</button>}
         />
         <div className="banner" style={{ marginBottom: 17 }}>
           <span>i</span>
-          <div><strong>كتالوج مباشر</strong>الخطط المعروضة وما يُنشأ من هنا يُرسل إلى Whop. هذه القائمة لا تحتوي على منتجات تجريبية.</div>
+          <div><strong>كتالوج المنتجات الرقمية</strong>تُحفظ المنتجات وروابط التنزيل في كتالوج المتجر، وتستطيع روبي استخدامها وإنشاء منتجات جديدة. خطط الدفع أدناه متصلة بـ Whop.</div>
         </div>
         {actionError && <div className="banner danger" role="alert" style={{ marginBottom: 14 }}><div><strong>لم يكتمل الإجراء</strong>{actionError}</div></div>}
         {actionSuccess && <div className="banner info" role="status" style={{ marginBottom: 14 }}><div>{actionSuccess}</div></div>}
+        {products.isLoading && <div className="panel skeleton-card"><div className="skeleton" style={{ width: '45%' }} /><div className="skeleton" style={{ width: '72%', height: 24, marginTop: 20 }} /></div>}
+        {products.isError && <ErrorState message={`تعذر تحميل الكتالوج الرقمي. ${getErrorMessage(products.error)}`} onRetry={() => products.refetch()} />}
+        {digitalProducts.length > 0 && (
+          <>
+            <h2 className="section-title">المنتجات الرقمية <span>{digitalProducts.length}</span></h2>
+            <div className="product-grid" style={{ marginBottom: 26 }}>
+              {digitalProducts.map((product) => (
+                <article className="panel product-card" key={product.id} data-testid={`card-digital-product-${product.id}`}>
+                  <div className="product-top">
+                    <div className="product-symbol"><Box size={19} /></div>
+                    <button className="btn-quiet" type="button" onClick={() => removeDigitalProduct(product.id)} disabled={deleteDigitalProduct.isPending} aria-label={`حذف ${product.title}`} title="حذف المنتج" data-testid={`button-delete-digital-product-${product.id}`}><Trash2 size={15} /></button>
+                  </div>
+                  <h3>{product.title}</h3>
+                  <p>{product.description}</p>
+                  <div className="product-meta">
+                    <div>
+                      <div className="product-price">{formatMoney(product.price, 'usd')}</div>
+                      <small style={{ color: '#92968f', fontSize: 10 }}>{formatDate(product.createdAt)}</small>
+                    </div>
+                    <a className="btn-secondary" href={product.downloadUrl} target="_blank" rel="noreferrer" data-testid={`link-download-${product.id}`}><ExternalLink size={14} /> رابط التنزيل</a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </>
+        )}
+        <h2 className="section-title">خطط الدفع عبر Whop</h2>
         {plans.isLoading && (
           <div className="product-grid">
             {[0, 1, 2].map((item) => <div className="panel skeleton-card" key={item}><div className="skeleton" style={{ width: '60%' }} /><div className="skeleton" style={{ width: '80%', height: 22, marginTop: 22 }} /></div>)}
           </div>
         )}
-        {plans.isError && <ErrorState message={`تعذر تحميل خطط المنتجات. ${getErrorMessage(plans.error)}`} onRetry={() => plans.refetch()} />}
+        {isWhopUnavailable && <div className="banner info" role="status" style={{ marginBottom: 14 }}><div><strong>كتالوجك الرقمي جاهز</strong>خطط Whop غير مهيأة حالياً؛ يمكنك إدارة المنتجات الرقمية وروابطها من هذا الكتالوج.</div></div>}
+        {plans.isError && !isWhopUnavailable && <ErrorState message={`تعذر تحميل خطط Whop. ${getErrorMessage(plans.error)}`} onRetry={() => plans.refetch()} />}
         {plans.data && plans.data.length > 0 && (
           <div className="product-grid">
             {plans.data.map((plan) => (
@@ -98,16 +170,16 @@ export function ProductsPage() {
             ))}
           </div>
         )}
-        {plans.data && plans.data.length === 0 && (
+        {whopStatus.data?.whop === 'ready' && plans.data && plans.data.length === 0 && (
           <div className="panel">
-            <EmptyState title="كتالوجك فارغ حالياً" description="أنشئ أول خطة منتج. يتطلب الإنشاء اتصال Whop وصلاحيات حساب مناسبة." icon={<Box size={22} />} />
+            <EmptyState title="لا توجد خطط دفع من Whop" description="تظهر هنا خطط الدفع المرتبطة بحساب Whop. المنتجات الرقمية المحفوظة تظهر في قسمها أعلاه." icon={<Box size={22} />} />
           </div>
         )}
         {isOpen && (
           <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setIsOpen(false); }}>
             <section className="modal-card" role="dialog" aria-modal="true" aria-labelledby="create-product-title" dir="rtl">
               <div className="modal-head">
-                <div><h2 id="create-product-title">إنشاء منتج</h2><p>سيُرسل المنتج وخطة الدفع إلى Whop.</p></div>
+                <div><h2 id="create-product-title">إضافة منتج رقمي</h2><p>أضف بيانات المنتج ورابط الملف أو صفحة التنزيل.</p></div>
                 <button className="btn-quiet" type="button" onClick={() => setIsOpen(false)} aria-label="إغلاق" data-testid="button-close-product-modal"><X size={18} /></button>
               </div>
               <form onSubmit={submitProduct}>
@@ -124,15 +196,11 @@ export function ProductsPage() {
                   <input id="product-price" type="number" inputMode="decimal" min="0.01" step="0.01" value={price} onChange={(event) => setPrice(event.target.value)} required data-testid="input-product-price" />
                 </div>
                 <div className="form-field">
-                  <label htmlFor="product-language">لغة المنتج</label>
-                  <select id="product-language" value={language} onChange={(event) => setLanguage(event.target.value as 'ar' | 'en')} data-testid="select-product-language">
-                    <option value="ar">العربية</option>
-                    <option value="en">الإنجليزية</option>
-                  </select>
+                  <label htmlFor="product-download-url">رابط التنزيل الرقمي</label>
+                  <input id="product-download-url" type="url" inputMode="url" placeholder="https://example.com/download" value={downloadUrl} onChange={(event) => setDownloadUrl(event.target.value)} required data-testid="input-product-download-url" />
                 </div>
-                {createProduct.isError && <div className="banner danger" role="alert" style={{ marginBottom: 14 }}>{getErrorMessage(createProduct.error)}</div>}
-                <button className="btn-primary" type="submit" disabled={createProduct.isPending} style={{ width: '100%' }} data-testid="button-submit-product">
-                  {createProduct.isPending ? 'جارٍ الإرسال…' : 'إنشاء المنتج'}
+                <button className="btn-primary" type="submit" disabled={createDigitalProduct.isPending} style={{ width: '100%' }} data-testid="button-submit-product">
+                  {createDigitalProduct.isPending ? 'جارٍ الحفظ…' : 'إضافة المنتج'}
                 </button>
               </form>
             </section>

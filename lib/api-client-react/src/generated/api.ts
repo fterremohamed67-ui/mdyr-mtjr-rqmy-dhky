@@ -20,10 +20,14 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AgentAsset,
   AgentMessageInput,
   AgentMessageResponse,
+  AgentSpeechInput,
   CheckoutInput,
   CheckoutLink,
+  CreateDigitalProductInput,
+  DigitalProduct,
   ErrorEnvelope,
   HealthStatus,
   IntegrationStatus,
@@ -709,4 +713,700 @@ export const useSendAgentMessage = <TError = ErrorType<ErrorEnvelope>,
       > => {
       return useMutation(getSendAgentMessageMutationOptions(options));
     }
+
+export const getListDigitalProductsUrl = () => {
+
+
+
+
+  return `/api/digital-products`
+}
+
+/**
+ * @summary List the authenticated user's digital products
+ */
+export const listDigitalProducts = async ( options?: Parameters<typeof customFetch>[1]): Promise<DigitalProduct[]> => {
+
+  return customFetch<DigitalProduct[]>(getListDigitalProductsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListDigitalProductsQueryKey = () => {
+    return [
+    `/api/digital-products`
+    ] as const;
+    }
+
+
+export const getListDigitalProductsQueryOptions = <TData = Awaited<ReturnType<typeof listDigitalProducts>>, TError = ErrorType<ErrorEnvelope>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listDigitalProducts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListDigitalProductsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listDigitalProducts>>> = ({ signal }) => listDigitalProducts({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listDigitalProducts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListDigitalProductsQueryResult = NonNullable<Awaited<ReturnType<typeof listDigitalProducts>>>
+export type ListDigitalProductsQueryError = ErrorType<ErrorEnvelope>
+
+
+/**
+ * @summary List the authenticated user's digital products
+ */
+
+export function useListDigitalProducts<TData = Awaited<ReturnType<typeof listDigitalProducts>>, TError = ErrorType<ErrorEnvelope>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listDigitalProducts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListDigitalProductsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateDigitalProductUrl = () => {
+
+
+
+
+  return `/api/digital-products`
+}
+
+/**
+ * @summary Add a digital product to the authenticated user's catalog
+ */
+export const createDigitalProduct = async (createDigitalProductInput: CreateDigitalProductInput, options?: Parameters<typeof customFetch>[1]): Promise<DigitalProduct> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<DigitalProduct>(getCreateDigitalProductUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createDigitalProductInput)
+  }
+);}
+
+
+
+
+
+export const getCreateDigitalProductMutationKey = () => ['createDigitalProduct'] as const;
+
+export const getCreateDigitalProductMutationOptions = <TError = ErrorType<ErrorEnvelope>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDigitalProduct>>, TError,CreateDigitalProductMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createDigitalProduct>>, TError,CreateDigitalProductMutationVariables, TContext> => {
+
+const mutationKey = getCreateDigitalProductMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createDigitalProduct>>, CreateDigitalProductMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createDigitalProduct(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateDigitalProductMutationResult = NonNullable<Awaited<ReturnType<typeof createDigitalProduct>>>
+    export type CreateDigitalProductMutationBody = BodyType<CreateDigitalProductInput>
+    export type CreateDigitalProductMutationError = ErrorType<ErrorEnvelope>
+    export type CreateDigitalProductMutationVariables = {data: BodyType<CreateDigitalProductInput>}
+
+    /**
+ * @summary Add a digital product to the authenticated user's catalog
+ */
+export const useCreateDigitalProduct = <TError = ErrorType<ErrorEnvelope>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDigitalProduct>>, TError,CreateDigitalProductMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createDigitalProduct>>,
+        TError,
+        CreateDigitalProductMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreateDigitalProductMutationOptions(options));
+    }
+
+export const getDeleteDigitalProductUrl = (id: string,) => {
+
+
+
+
+  return `/api/digital-products/${id}`
+}
+
+export const deleteDigitalProduct = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeleteDigitalProductUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteDigitalProductMutationKey = () => ['deleteDigitalProduct'] as const;
+
+export const getDeleteDigitalProductMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDigitalProduct>>, TError,DeleteDigitalProductMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteDigitalProduct>>, TError,DeleteDigitalProductMutationVariables, TContext> => {
+
+const mutationKey = getDeleteDigitalProductMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteDigitalProduct>>, DeleteDigitalProductMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteDigitalProduct(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteDigitalProductMutationResult = NonNullable<Awaited<ReturnType<typeof deleteDigitalProduct>>>
+
+    export type DeleteDigitalProductMutationError = ErrorType<void>
+    export type DeleteDigitalProductMutationVariables = {id: string}
+
+    export const useDeleteDigitalProduct = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDigitalProduct>>, TError,DeleteDigitalProductMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteDigitalProduct>>,
+        TError,
+        DeleteDigitalProductMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDeleteDigitalProductMutationOptions(options));
+    }
+
+export const getDownloadDigitalProductUrl = (id: string,) => {
+
+
+
+
+  return `/api/digital-products/${id}/download`
+}
+
+export const downloadDigitalProduct = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<string> => {
+
+  return customFetch<string>(getDownloadDigitalProductUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getDownloadDigitalProductQueryKey = (id: string,) => {
+    return [
+    `/api/digital-products/${id}/download`
+    ] as const;
+    }
+
+
+export const getDownloadDigitalProductQueryOptions = <TData = Awaited<ReturnType<typeof downloadDigitalProduct>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof downloadDigitalProduct>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDownloadDigitalProductQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof downloadDigitalProduct>>> = ({ signal }) => downloadDigitalProduct(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof downloadDigitalProduct>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type DownloadDigitalProductQueryResult = NonNullable<Awaited<ReturnType<typeof downloadDigitalProduct>>>
+export type DownloadDigitalProductQueryError = ErrorType<unknown>
+
+
+
+export function useDownloadDigitalProduct<TData = Awaited<ReturnType<typeof downloadDigitalProduct>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof downloadDigitalProduct>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getDownloadDigitalProductQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getSynthesizeAgentSpeechUrl = () => {
+
+
+
+
+  return `/api/agent/speech`
+}
+
+/**
+ * @summary Synthesize assistant speech using the configured server-side provider
+ */
+export const synthesizeAgentSpeech = async (agentSpeechInput: AgentSpeechInput, options?: Parameters<typeof customFetch>[1]): Promise<Blob> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<Blob>(getSynthesizeAgentSpeechUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(agentSpeechInput)
+  }
+);}
+
+
+
+
+
+export const getSynthesizeAgentSpeechMutationKey = () => ['synthesizeAgentSpeech'] as const;
+
+export const getSynthesizeAgentSpeechMutationOptions = <TError = ErrorType<ErrorEnvelope>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof synthesizeAgentSpeech>>, TError,SynthesizeAgentSpeechMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof synthesizeAgentSpeech>>, TError,SynthesizeAgentSpeechMutationVariables, TContext> => {
+
+const mutationKey = getSynthesizeAgentSpeechMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof synthesizeAgentSpeech>>, SynthesizeAgentSpeechMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  synthesizeAgentSpeech(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SynthesizeAgentSpeechMutationResult = NonNullable<Awaited<ReturnType<typeof synthesizeAgentSpeech>>>
+    export type SynthesizeAgentSpeechMutationBody = BodyType<AgentSpeechInput>
+    export type SynthesizeAgentSpeechMutationError = ErrorType<ErrorEnvelope>
+    export type SynthesizeAgentSpeechMutationVariables = {data: BodyType<AgentSpeechInput>}
+
+    /**
+ * @summary Synthesize assistant speech using the configured server-side provider
+ */
+export const useSynthesizeAgentSpeech = <TError = ErrorType<ErrorEnvelope>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof synthesizeAgentSpeech>>, TError,SynthesizeAgentSpeechMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof synthesizeAgentSpeech>>,
+        TError,
+        SynthesizeAgentSpeechMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSynthesizeAgentSpeechMutationOptions(options));
+    }
+
+export const getListAgentAssetsUrl = () => {
+
+
+
+
+  return `/api/agent/assets`
+}
+
+/**
+ * @summary List uploaded assets for the authenticated user
+ */
+export const listAgentAssets = async ( options?: Parameters<typeof customFetch>[1]): Promise<AgentAsset[]> => {
+
+  return customFetch<AgentAsset[]>(getListAgentAssetsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListAgentAssetsQueryKey = () => {
+    return [
+    `/api/agent/assets`
+    ] as const;
+    }
+
+
+export const getListAgentAssetsQueryOptions = <TData = Awaited<ReturnType<typeof listAgentAssets>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAgentAssets>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAgentAssetsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAgentAssets>>> = ({ signal }) => listAgentAssets({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAgentAssets>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListAgentAssetsQueryResult = NonNullable<Awaited<ReturnType<typeof listAgentAssets>>>
+export type ListAgentAssetsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List uploaded assets for the authenticated user
+ */
+
+export function useListAgentAssets<TData = Awaited<ReturnType<typeof listAgentAssets>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAgentAssets>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListAgentAssetsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUploadAgentAssetUrl = () => {
+
+
+
+
+  return `/api/agent/assets`
+}
+
+/**
+ * @summary Upload an asset up to 20 MB
+ */
+export const uploadAgentAsset = async (uploadAgentAssetBody: Blob, options?: Parameters<typeof customFetch>[1]): Promise<AgentAsset> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<AgentAsset>(getUploadAgentAssetUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/octet-stream', ...getHeaders(options?.headers) },
+    body: uploadAgentAssetBody
+  }
+);}
+
+
+
+
+
+export const getUploadAgentAssetMutationKey = () => ['uploadAgentAsset'] as const;
+
+export const getUploadAgentAssetMutationOptions = <TError = ErrorType<ErrorEnvelope>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadAgentAsset>>, TError,UploadAgentAssetMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof uploadAgentAsset>>, TError,UploadAgentAssetMutationVariables, TContext> => {
+
+const mutationKey = getUploadAgentAssetMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadAgentAsset>>, UploadAgentAssetMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  uploadAgentAsset(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UploadAgentAssetMutationResult = NonNullable<Awaited<ReturnType<typeof uploadAgentAsset>>>
+    export type UploadAgentAssetMutationBody = BodyType<Blob>
+    export type UploadAgentAssetMutationError = ErrorType<ErrorEnvelope>
+    export type UploadAgentAssetMutationVariables = {data: BodyType<Blob>}
+
+    /**
+ * @summary Upload an asset up to 20 MB
+ */
+export const useUploadAgentAsset = <TError = ErrorType<ErrorEnvelope>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadAgentAsset>>, TError,UploadAgentAssetMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof uploadAgentAsset>>,
+        TError,
+        UploadAgentAssetMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUploadAgentAssetMutationOptions(options));
+    }
+
+export const getDeleteAgentAssetUrl = (id: string,) => {
+
+
+
+
+  return `/api/agent/assets/${id}`
+}
+
+export const deleteAgentAsset = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeleteAgentAssetUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteAgentAssetMutationKey = () => ['deleteAgentAsset'] as const;
+
+export const getDeleteAgentAssetMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAgentAsset>>, TError,DeleteAgentAssetMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAgentAsset>>, TError,DeleteAgentAssetMutationVariables, TContext> => {
+
+const mutationKey = getDeleteAgentAssetMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAgentAsset>>, DeleteAgentAssetMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteAgentAsset(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteAgentAssetMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAgentAsset>>>
+
+    export type DeleteAgentAssetMutationError = ErrorType<void>
+    export type DeleteAgentAssetMutationVariables = {id: string}
+
+    export const useDeleteAgentAsset = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAgentAsset>>, TError,DeleteAgentAssetMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteAgentAsset>>,
+        TError,
+        DeleteAgentAssetMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDeleteAgentAssetMutationOptions(options));
+    }
+
+export const getDownloadAgentAssetUrl = (id: string,) => {
+
+
+
+
+  return `/api/agent/assets/${id}/download`
+}
+
+export const downloadAgentAsset = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<Blob> => {
+
+  return customFetch<Blob>(getDownloadAgentAssetUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getDownloadAgentAssetQueryKey = (id: string,) => {
+    return [
+    `/api/agent/assets/${id}/download`
+    ] as const;
+    }
+
+
+export const getDownloadAgentAssetQueryOptions = <TData = Awaited<ReturnType<typeof downloadAgentAsset>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof downloadAgentAsset>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDownloadAgentAssetQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof downloadAgentAsset>>> = ({ signal }) => downloadAgentAsset(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof downloadAgentAsset>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type DownloadAgentAssetQueryResult = NonNullable<Awaited<ReturnType<typeof downloadAgentAsset>>>
+export type DownloadAgentAssetQueryError = ErrorType<unknown>
+
+
+
+export function useDownloadAgentAsset<TData = Awaited<ReturnType<typeof downloadAgentAsset>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof downloadAgentAsset>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getDownloadAgentAssetQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
