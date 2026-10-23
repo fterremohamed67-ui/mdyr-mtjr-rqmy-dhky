@@ -1,4 +1,5 @@
 // @ts-nocheck
+// Update trigger
 import express, { type Express } from "express";
 import cors from "cors";
 import { clerkMiddleware } from "@clerk/express";
