@@ -12,5 +12,13 @@
     {
       "path": "./lib/api-zod"
     }
+  ],
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "noEmitOnError": false
+  },
+  "exclude": [
+    "node_modules",
+    "lib/api-zod/src/generated"
   ]
 }
