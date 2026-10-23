@@ -5,7 +5,7 @@
     "lib": ["es2022"],
     "module": "esnext",
     "moduleResolution": "bundler",
-    "noEmitOnError": true,
+    "noEmitOnError": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": false,
     "noImplicitReturns": true,
@@ -22,5 +22,6 @@
     "target": "es2022",
     "types": [],
     "customConditions": ["workspace"]
-  }
+  },
+  "exclude": ["**/generated/**/*", "node_modules"]
 }

@@ -7,5 +7,36 @@
     "outDir": "dist",
     "rootDir": "src"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "files": [
+    "src/generated/api.ts",
+    "src/generated/types/agentAsset.ts",
+    "src/generated/types/agentMessageInput.ts",
+    "src/generated/types/agentMessageInputDigitalProductsItem.ts",
+    "src/generated/types/agentMessageInputHistoryItem.ts",
+    "src/generated/types/agentMessageInputHistoryItemRole.ts",
+    "src/generated/types/agentMessageResponse.ts",
+    "src/generated/types/agentMessageResponseLanguage.ts",
+    "src/generated/types/agentSpeechInput.ts",
+    "src/generated/types/checkoutInput.ts",
+    "src/generated/types/checkoutLink.ts",
+    "src/generated/types/createDigitalProductInput.ts",
+    "src/generated/types/digitalProduct.ts",
+    "src/generated/types/errorEnvelope.ts",
+    "src/generated/types/healthStatus.ts",
+    "src/generated/types/index.ts",
+    "src/generated/types/integrationStatus.ts",
+    "src/generated/types/integrationStatusAi.ts",
+    "src/generated/types/integrationStatusBinance.ts",
+    "src/generated/types/integrationStatusWhatsapp.ts",
+    "src/generated/types/integrationStatusWhop.ts",
+    "src/generated/types/productInput.ts",
+    "src/generated/types/productInputCurrency.ts",
+    "src/generated/types/productInputLanguage.ts",
+    "src/generated/types/storeOverview.ts",
+    "src/generated/types/storeOverviewIntegrationState.ts",
+    "src/generated/types/storePayment.ts",
+    "src/generated/types/storePlan.ts",
+    "src/generated/types/storePlanLanguage.ts"
+  ]
 }
