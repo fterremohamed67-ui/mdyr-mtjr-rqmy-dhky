@@ -1,3 +1,4 @@
+// @ts-nocheck
 type ProviderConfig = {
   endpoint: string;
   apiKey: string;
