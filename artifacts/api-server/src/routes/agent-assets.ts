@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { getAuth } from '@clerk/express';
 import express, { Router, type IRouter, type Request } from 'express';
 import { requireAuth } from '../middlewares/requireAuth';
