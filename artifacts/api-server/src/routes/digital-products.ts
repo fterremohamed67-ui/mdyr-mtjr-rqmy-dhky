@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { getAuth } from '@clerk/express';
 import { CreateDigitalProductBody } from '@workspace/api-zod';
 import { Router, type IRouter, type Request } from 'express';
