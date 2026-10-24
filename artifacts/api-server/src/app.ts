@@ -3,7 +3,7 @@ import express, { type Express } from "express";
 import cors from "cors";
 import { clerkMiddleware } from "@clerk/express";
 import { publishableKeyFromHost } from "@clerk/shared/keys";
-import router from "./routes";
+import router from "./routes/index.js";
 import { logger } from "./lib/logger";
 import {
   CLERK_PROXY_PATH,
