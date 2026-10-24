@@ -1,9 +1,9 @@
 // @ts-nocheck
 import { getAuth } from '@clerk/express';
 import express, { Router, type IRouter, type Request } from 'express';
-import { requireAuth } from '../middlewares/requireAuth';
-import { deleteAgentAsset, listAgentAssets, readAgentAsset, saveAgentAsset } from '../lib/agent-assets';
-import { getPublicOrigin } from '../lib/digital-products';
+import { requireAuth } from '../middlewares/requireAuth.js';
+import { deleteAgentAsset, listAgentAssets, readAgentAsset, saveAgentAsset } from '../lib/agent-assets.js';
+import { getPublicOrigin } from '../lib/digital-products.js';
 
 const router: IRouter = Router();
 const uploadBody = express.raw({ type: 'application/octet-stream', limit: '20mb' });

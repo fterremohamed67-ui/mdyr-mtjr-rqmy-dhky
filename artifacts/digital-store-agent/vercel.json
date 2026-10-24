@@ -2,5 +2,15 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
   "buildCommand": null,
-  "outputDirectory": "dist/public"
+  "outputDirectory": "dist/public",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://mdyr-mtjr-rqmy-dhky-api-server.vercel.app/api/:path*"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/"
+    }
+  ]
 }

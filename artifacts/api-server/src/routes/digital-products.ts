@@ -2,14 +2,14 @@
 import { getAuth } from '@clerk/express';
 import { CreateDigitalProductBody } from '@workspace/api-zod';
 import { Router, type IRouter, type Request } from 'express';
-import { requireAuth } from '../middlewares/requireAuth';
+import { requireAuth } from '../middlewares/requireAuth.js';
 import {
   createDigitalProduct,
   deleteDigitalProduct,
   getPublicOrigin,
   listDigitalProducts,
   readDigitalProductDownload,
-} from '../lib/digital-products';
+} from '../lib/digital-products.js';
 
 const router: IRouter = Router();
 

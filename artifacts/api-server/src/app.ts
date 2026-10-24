@@ -1,18 +1,20 @@
 // @ts-nocheck
 import express, { type Express } from "express";
 import cors from "cors";
+import pinoHttp from "pino-http";
 import { clerkMiddleware } from "@clerk/express";
 import { publishableKeyFromHost } from "@clerk/shared/keys";
 import router from "./routes/index.js";
-import { logger } from "./lib/logger";
+import { logger } from "./lib/logger.js";
 import {
   CLERK_PROXY_PATH,
   clerkProxyMiddleware,
   getClerkProxyHost,
-} from "./middlewares/clerkProxyMiddleware";
+} from "./middlewares/clerkProxyMiddleware.js";
 
 const app: Express = express();
 
+app.use(pinoHttp({ logger }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

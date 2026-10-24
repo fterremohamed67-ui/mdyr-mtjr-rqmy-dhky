@@ -117,7 +117,7 @@ async function main() {
   if (build.error) throw build.error;
   if (build.status !== 0) throw new Error('API server build failed.');
 
-  const api = start(process.execPath, ['--enable-source-maps', './dist/index.mjs'], {
+  const api = start(process.execPath, ['--enable-source-maps', './dist/local.mjs'], {
     cwd: apiDir,
     env: apiEnv,
   });

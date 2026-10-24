@@ -1,9 +1,9 @@
 import { Router, type IRouter } from "express";
-import agentAssetsRouter from "./agent-assets";
-import agentRouter from "./agent";
-import digitalProductsRouter from "./digital-products";
-import healthRouter from "./health";
-import whopRouter from "./whop";
+import agentAssetsRouter from "./agent-assets.js";
+import agentRouter from "./agent.js";
+import digitalProductsRouter from "./digital-products.js";
+import healthRouter from "./health.js";
+import whopRouter from "./whop.js";
 
 const router: IRouter = Router();
 

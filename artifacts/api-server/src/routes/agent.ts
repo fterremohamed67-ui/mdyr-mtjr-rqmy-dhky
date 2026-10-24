@@ -2,9 +2,9 @@
 import { SendAgentMessageBody } from "@workspace/api-zod";
 import { getAuth } from "@clerk/express";
 import { Router, type IRouter, type Request } from "express";
-import { requireAuth } from "../middlewares/requireAuth";
-import { createDigitalProduct, getPublicOrigin, listDigitalProducts } from "../lib/digital-products";
-import { saveAgentAsset } from "../lib/agent-assets";
+import { requireAuth } from "../middlewares/requireAuth.js";
+import { createDigitalProduct, getPublicOrigin, listDigitalProducts } from "../lib/digital-products.js";
+import { saveAgentAsset } from "../lib/agent-assets.js";
 import {
   AiProviderError,
   detectAssistantLanguage,
@@ -12,7 +12,7 @@ import {
   isAiProviderConfigured,
   isSpeechProviderConfigured,
   synthesizeAssistantSpeech,
-} from "../lib/ai-provider";
+} from "../lib/ai-provider.js";
 
 const router: IRouter = Router();
 

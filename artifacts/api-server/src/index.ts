@@ -1,2 +1,2 @@
-import "./load-env";
-export { default } from "./app";
+import "./load-env.js";
+export { default } from "./app.js";
